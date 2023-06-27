@@ -1,0 +1,83 @@
+Configuring kafka
+open config folder and open the zookeeper.properties and change
+dataDir=C:\kafka_2.12-3.3.1\zookeeper-data
+
+and open server.properties and change
+log.dirs=C:\kafka_2.12-3.3.1\kafka-logs
+
+Open the /bin/windows path in cmd of kafka and type
+C:\kafka_2.12-3.3.1\bin\windows>.\zookeeper-server-start.bat C:\kafka_2.12-3.3.1\config\zookeeper.properties to start zookeeper
+open another cmd and type
+C:\kafka_2.12-3.3.1\bin\windows>.\kafka-server-start.bat C:\kafka_2.12-3.3.1\config\server.properties to start kafka 
+
+to check the topics being stored type
+C:\kafka_2.12-3.3.1\bin\windows>.\kafka-console-consumer.bat --topic sample --from-beginning --bootstrap-server localhost:9092 
+
+to create topic in cli
+C:\kafka_2.12-3.3.1\bin\windows>.\kafka-topics.bat --create --topic example --replication-factor 1 --partitions 1 --bootstrap-server localhost:9092
+Created topic example.
+
+to create producer in cli without key
+C:\kafka_2.12-3.3.1\bin\windows>.\kafka-console-producer.bat --broker-list localhost:9092 --topic example
+>hello
+>hi
+>what are you doing
+
+to create consumer in cli without key
+C:\kafka_2.12-3.3.1\bin\windows>.\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic example --from-beginning
+hello
+hi
+what are you doing
+welcome
+apple
+hi
+hello
+
+to create producer with key
+C:\kafka_2.12-3.3.1\bin\windows>.\kafka-console-producer.bat --broker-list localhost:9092 --topic example --property "key.separator=-" --property "parse.key=true"
+>a-apple
+>a-hi
+>b-hello
+>
+
+to create consumer with key
+C:\kafka_2.12-3.3.1\bin\windows>.\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic example --from-beginning --property key.separator=: --property print.key=true
+null:hello
+null:hi
+null:what are you doing
+null:welcome
+a:apple
+a:hi
+b:hello
+
+CONSUMER GROUPS
+for consumer groups, create topics with partitions more than 1
+C:\kafka_2.12-3.3.1\bin\windows>.\kafka-topics.bat --create --topic samplegroup --replication-factor 1 --partitions 3 --bootstrap-server localhost:9092
+Created topic samplegroup.
+
+create a consumer with group "my first application" in a new terminal
+C:\kafka_2.12-3.3.1\bin\windows>kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic samplegroup --group my-first-application
+
+create another consumer in the same group my first application by opening another terminal
+C:\kafka_2.12-3.3.1\bin\windows>kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic samplegroup --group my-first-application
+
+create another consumer with the same group in another terminal
+C:\kafka_2.12-3.3.1\bin\windows>kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic samplegroup --group my-first-application 
+
+create a producer to produce message for the cosumer to consume it
+C:\kafka_2.12-3.3.1\bin\windows>kafka-console-producer.bat --bootstrap-server localhost:9092 --topic samplegroup
+>hi
+>hello
+>htre
+>ngttv
+>njugu
+>hrllo
+>nfirewlr,
+>d jedfgmeod
+>fhebfuefkme
+>dvkdnuvnedk
+>smcosmcedm
+>cdmmcoep
+>
+
+The messages produced will be consumed by the consumers according to the partitions given and will be distributed among them. 
